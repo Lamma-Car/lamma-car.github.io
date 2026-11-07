@@ -30,6 +30,13 @@ Before activating, tell the person plainly, and get their agreement (message or 
 
 Record it with `--consent`. Keep the actual consent evidence off GitHub.
 
+## The admin page and your token
+
+- The GitHub token gives write access to the repository. Create it with access to `Lamma_Car` only and **Contents: Read and write** only, and give it an expiry date.
+- The token is never written to any file. It stays in the browser's memory, or in the browser's local storage on your computer if you tick "افتكر الـ Token". Don't tick it on a shared computer. Use **خروج** to forget it.
+- If a token leaks, delete it on GitHub (Settings → Developer settings → Fine-grained tokens) and create a new one.
+- `tools/admin.html` is visible in the public repository like every other file. That's fine: it holds no data and does nothing without a token.
+
 ## Never put in the repository
 
 Passwords, API keys, tokens, national ID numbers, licence plates, addresses, emails, car details, payment information, notes about customers, or consent forms.

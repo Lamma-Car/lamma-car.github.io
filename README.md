@@ -4,7 +4,7 @@ One QR code → one contact page → one registered person.
 
 A sticker on the inside of a car's rear windshield carries a QR code. Scanning it opens a small contact card with the owner's name, mobile number, a **Call** button and a **WhatsApp** button. Nothing else.
 
-The whole product is static files hosted free on **GitHub Pages**. There is no server, database, login or build step on GitHub. All management (batches, assigning contacts, QR images, sticker PDFs) happens on the owner's own computer with one small Python script.
+The whole product is static files hosted free on **GitHub Pages**. There is no server, database, login or build step on GitHub. All management (batches, assigning contacts, QR images, sticker PDFs) happens on the owner's own computer: in the admin page `tools/admin.html` (opens in the browser and publishes straight to GitHub), or with the equivalent Python script.
 
 ## How it works
 
@@ -13,7 +13,7 @@ batches/LC-….json  ──►  python tools/lamma.py build  ──►  docs/q/<
  (source of truth)        (run on your computer)          (one static page per code)       (public)
 ```
 
-- Every code gets its own folder: `docs/q/<code>/index.html`. A QR URL is `https://shamelbyvezeeta.github.io/lamma-car/q/<code>/`.
+- Every code gets its own folder: `docs/q/<code>/index.html`. A QR URL is `https://shamelbyvezeeta.github.io/Lamma_Car/q/<code>/`.
 - **Active** codes get a contact page. **Available, assigned and inactive** codes get an "unavailable" page that contains no contact data at all.
 - Unknown codes hit `docs/404.html`, which shows the same "unavailable" message, so nobody can tell a real code from a made-up one.
 - Each page holds only its own record. There is no list, search or shared data file on the site.
@@ -35,11 +35,12 @@ lamma-car/
 ├── exports/<batch>/           QR PNG/SVG, summary.csv, sticker PDFs (generated)
 ├── stickers/                  sticker master artwork, die line and preview
 ├── tools/
-│   ├── lamma.py               the management tool (all commands)
+│   ├── admin.html             admin page: open on your computer, publishes via the GitHub API
+│   ├── lamma.py               the same management tasks from the command line
 │   ├── stickers.py            sticker artwork and PDF layout
 │   ├── templates/             HTML templates for the pages
 │   ├── fonts/                 fonts used in the PDFs
-│   ├── brand/                 official logo, full resolution (stickers)
+│   ├── brand/                 official logo, full resolution, and the sticker base used by admin.html
 │   └── requirements.txt
 ├── config.json                your GitHub Pages URL and default country code
 ├── DEPLOYMENT_GUIDE.md        step-by-step upload and GitHub Pages setup
@@ -50,10 +51,14 @@ lamma-car/
 
 ## Quick start
 
-Live address: **https://shamelbyvezeeta.github.io/lamma-car/** (already set in `config.json`).
+Live address: **https://shamelbyvezeeta.github.io/Lamma_Car/** (already set in `config.json`).
 
 1. Upload and publish: follow **DEPLOYMENT_GUIDE.md** step by step.
-2. On your computer, inside this folder:
+2. Double-click **`tools/admin.html`**, connect with a GitHub token (BATCH_MANAGEMENT_GUIDE.md explains how to create one), then:
+   - **+ دفعة أكواد جديدة** → **نشر على الموقع** → download the sticker PDFs;
+   - **إضافة عميل** on a code → **نشر على الموقع**.
+
+Prefer the command line? The same tasks:
 
 ```bash
 pip install -r tools/requirements.txt
@@ -62,11 +67,9 @@ python tools/lamma.py assign <code> --name-ar "…" --name-en "…" --phone 0100
 python tools/lamma.py check
 ```
 
-3. Upload the changed `batches`, `docs` and `exports` folders to the repository.
+then upload the changed `batches`, `docs` and `exports` folders. On Windows use `py` instead of `python` if `python` isn't recognised.
 
-On Windows use `py` instead of `python` if `python` isn't recognised.
-
-## All commands
+## Command-line tool (`tools/lamma.py`)
 
 | Command | What it does |
 |---|---|

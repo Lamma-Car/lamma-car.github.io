@@ -1,7 +1,7 @@
 # Upload and deployment guide
 
-**Live site address (after deployment):** https://shamelbyvezeeta.github.io/lamma-car/
-**QR code addresses:** `https://shamelbyvezeeta.github.io/lamma-car/q/<code>/`
+**Live site address (after deployment):** https://shamelbyvezeeta.github.io/Lamma_Car/
+**QR code addresses:** `https://shamelbyvezeeta.github.io/Lamma_Car/q/<code>/`
 
 Everything in this package is already set to this address. You don't need to create or edit any file.
 
@@ -11,7 +11,7 @@ Everything in this package is already set to this address. You don't need to cre
 
 1. Sign in to github.com with an account that can create repositories in **shamelbyvezeeta**.
 2. Click **+** (top right) → **New repository**.
-3. **Owner:** `shamelbyvezeeta` · **Repository name:** `lamma-car` (exactly, lowercase).
+3. **Owner:** `shamelbyvezeeta` · **Repository name:** `Lamma_Car` (exactly: capital L and C, underscore).
 4. **Visibility:** Public.
 5. Leave "Add a README", ".gitignore" and "license" **unticked**.
 6. Click **Create repository**.
@@ -32,48 +32,33 @@ Everything in this package is already set to this address. You don't need to cre
 2. Under **Build and deployment** → **Source**, choose **Deploy from a branch**.
 3. **Branch:** `main`, folder: **`/docs`**. Click **Save**.
 4. Open the **Actions** tab. Wait for "pages build and deployment" to show a green tick (usually 1–3 minutes).
-5. Back in **Settings → Pages**, the top shows *Your site is live at https://shamelbyvezeeta.github.io/lamma-car/*.
+5. Back in **Settings → Pages**, the top shows *Your site is live at https://shamelbyvezeeta.github.io/Lamma_Car/*.
 
 ## Part 4 — Check the live site
 
 | Open this | You should see |
 |---|---|
-| https://shamelbyvezeeta.github.io/lamma-car/ | Lamma Car card: "امسح الملصق للتواصل مع صاحب السيارة" |
-| https://shamelbyvezeeta.github.io/lamma-car/?lang=en | The same in English, left-to-right |
-| https://shamelbyvezeeta.github.io/lamma-car/q/zzzzzz/ | "هذا الرمز غير متاح حالياً" (unknown code) with the same styling |
+| https://shamelbyvezeeta.github.io/Lamma_Car/ | Lamma Car card: "امسح الملصق للتواصل مع صاحب السيارة" |
+| https://shamelbyvezeeta.github.io/Lamma_Car/?lang=en | The same in English, left-to-right |
+| https://shamelbyvezeeta.github.io/Lamma_Car/q/zzzzzz/ | "هذا الرمز غير متاح حالياً" (unknown code) with the same styling |
 
-If the third page has no styling, the repository name isn't exactly `lamma-car`.
+If the third page has no styling, the repository name isn't exactly `Lamma_Car`.
 
 The package contains **no codes and no contacts** yet, so there are no contact pages until you create your first batch (Part 5).
 
-## Part 5 — First batch and first contact (on your computer)
+## Part 5 — First batch and first customer (admin page)
 
-You need Python 3.9 or newer (python.org). Open a terminal (Windows: Command Prompt) **inside the unzipped `lamma-car` folder** and run:
+1. On your computer, open the unzipped `lamma-car` folder → `tools` → double-click **`admin.html`**.
+2. Create a GitHub token and connect (the page shows the steps; details in BATCH_MANAGEMENT_GUIDE.md).
+3. **+ دفعة أكواد جديدة** → e.g. 40 → **إنشاء** → **نشر على الموقع**.
+4. On the batch card, download **ملصقات للطباعة** for the print shop (read STICKER_PRINT_GUIDE.md first).
+5. When a customer gets a sticker: find its code → **إضافة عميل** → name, mobile, consent → **حفظ** → **نشر على الموقع**.
 
-```bash
-pip install -r tools/requirements.txt
-python tools/lamma.py new-batch --count 40 --note "First print run"
-```
+No uploading by hand: the admin page saves directly to the repository, and GitHub Pages updates the site in 1–10 minutes.
 
-(Windows: use `py` instead of `python` if needed.)
+## Part 6 — If you use the command-line tool instead
 
-This creates the codes, their pages, the QR images and the sticker PDFs in `exports/LC-…/`. Then, for a customer who has received a sticker and agreed to be listed:
-
-```bash
-python tools/lamma.py assign <code> --name-ar "الاسم" --name-en "Name" --phone 01001234567 --consent --activate
-python tools/lamma.py check
-```
-
-## Part 6 — Upload changes after using the tool
-
-Every command changes files in `batches/`, `docs/` and, for new batches, `exports/`. To publish them:
-
-1. In the repository, click **Add file → Upload files**.
-2. Drag the folders **`batches`**, **`docs`** and (after a new batch) **`exports`** from your `lamma-car` folder into the browser. Files with the same names are replaced.
-3. Click **Commit changes**. Wait for the green tick in **Actions**, then about 10 minutes for caching.
-4. Scan the sticker or open its `q/<code>/` address to confirm.
-
-If you later install git, `git add . && git commit -m "update" && git push` does the same in one step.
+`python tools/lamma.py …` changes files on your computer only. Upload the changed `batches`, `docs` and `exports` folders with **Add file → Upload files** (files with the same names are replaced), or `git push`. If you switch between the admin page and the command line, first download the latest repository (**Code → Download ZIP**) so you start from what's on GitHub.
 
 > Uploading through the website can add and replace files but cannot delete them. Nothing in normal operation needs deleting: deactivated codes keep their page, which shows "unavailable".
 
@@ -81,18 +66,18 @@ If you later install git, `git add . && git commit -m "update" && git push` does
 
 Before sending a batch to the printer:
 
-1. Activate one code of the batch with your own name and number (your own consent).
-2. Upload the changes (Part 6), scan the printed test sticker on a real rear windshield from outside, and check the call and WhatsApp buttons.
-3. Then `python tools/lamma.py deactivate <code> --erase` and upload again (or hand that sticker to a real customer later — the code stays unique).
+1. In the admin page, add your own name and number to one code of the batch (your own consent) and publish.
+2. Print that sticker (A4 تجربة), fix it inside a real rear windshield, scan it from outside, and check the Call and WhatsApp buttons.
+3. Then **مسح البيانات** on that code and publish. Don't give that sticker to a customer afterwards: an erased code stays "unavailable".
 
 STICKER_PRINT_GUIDE.md explains the mirrored/normal choice and the glass test.
 
 ## How GitHub Pages details are handled
 
-- Contact pages use relative paths (`../../assets/…`), so they work under `/lamma-car/`. Only `404.html` uses the full `/lamma-car/…` path, as GitHub requires.
+- Contact pages use relative paths (`../../assets/…`), so they work under `/Lamma_Car/`. Only `404.html` uses the full `/Lamma_Car/…` path, as GitHub requires.
 - Every code is a real folder with an `index.html`, so direct links and refreshing never give a 404.
 - QR codes include the trailing `/`, which avoids a redirect.
 
 ## Never change after printing
 
-`shamelbyvezeeta`, `lamma-car` and `github.io` are inside every printed QR code. Renaming the organization or repository, making it private, or switching Pages off breaks every sticker already on a car.
+`shamelbyvezeeta`, `Lamma_Car` and `github.io` are inside every printed QR code. Renaming the organization or repository, making it private, or switching Pages off breaks every sticker already on a car.

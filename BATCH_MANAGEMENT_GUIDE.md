@@ -2,13 +2,44 @@
 
 Everything here runs on your own computer. Nothing on the website can change data — a person scanning a sticker only ever receives one static page.
 
+## The admin page (recommended)
+
+`tools/admin.html` is a management page that runs in your browser on your own computer. It is **not** part of the website (GitHub Pages only publishes `docs/`), and it can do nothing without your GitHub token.
+
+**Open it:** double-click `tools/admin.html` in your unzipped `lamma-car` folder (Chrome, Edge or Safari, internet connection needed).
+
+**Connect (first time):**
+
+1. On GitHub: your photo → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens** → **Generate new token**.
+2. **Resource owner:** `shamelbyvezeeta`. **Repository access:** Only select repositories → `Lamma_Car`.
+3. **Repository permissions** → **Contents: Read and write**. Nothing else.
+4. Generate, copy the token, paste it into the admin page, click **اتصال**.
+   - Tick "افتكر الـ Token" only on your own computer.
+   - If GitHub says the token is pending approval, an owner of the `shamelbyvezeeta` organization must approve it (Organization settings → Personal access tokens).
+
+**What you can do:**
+
+| Task | How |
+|---|---|
+| New batch of codes | **+ دفعة أكواد جديدة** → number of codes → **إنشاء** → **نشر على الموقع** |
+| Print files | On the batch card: **ملصقات للطباعة · معكوس** / **عادي** (one sticker per page), **A4 تجربة** (4 per A4 with crop marks), **صور QR (ZIP)** (PNG + SVG + summary CSV) |
+| Add a customer | Find the sticker's code → **إضافة عميل** → name, mobile, tick the consent box → **حفظ** → **نشر على الموقع** |
+| Edit / stop / remove | **تعديل**, **إيقاف**, **تفعيل**, **مسح البيانات** on the code's row, then **نشر على الموقع** |
+| See a code's QR | **QR** on the row (with PNG download) |
+
+Changes stay on your screen (orange bar) until you click **نشر على الموقع**, which saves everything to GitHub in one step. The site updates within 1–10 minutes.
+
+The page uses the same templates, rules and file format as `tools/lamma.py`, so you can use either. If someone else changed the same batch on GitHub in the meantime, the page refuses to publish and asks you to reload rather than overwrite.
+
+Everything below describes the command-line tool, which does the same things.
+
 ## One-time setup
 
 ```bash
 pip install -r tools/requirements.txt
 ```
 
-The site address (`https://shamelbyvezeeta.github.io/lamma-car/`) is already saved in `config.json`. Default country code for local numbers is **20 (Egypt)**, so `01001234567` is saved as `+201001234567`. Numbers written with `+` or `00` are kept as typed.
+The site address (`https://shamelbyvezeeta.github.io/Lamma_Car/`) is already saved in `config.json`. Default country code for local numbers is **20 (Egypt)**, so `01001234567` is saved as `+201001234567`. Numbers written with `+` or `00` are kept as typed.
 
 ## Code statuses
 
@@ -113,7 +144,7 @@ Exports always use the URL stored in the batch, so reprinting an old batch gives
   "batch_id": "LC-20261201-01",
   "created": "2026-12-01",
   "note": "Print run 1",
-  "site_url": "https://shamelbyvezeeta.github.io/lamma-car/",
+  "site_url": "https://shamelbyvezeeta.github.io/Lamma_Car/",
   "codes": [
     { "code": "k7m3qx", "status": "active", "updated": "2026-12-03",
       "contact": { "name_ar": "أحمد علي", "name_en": "Ahmed Ali",
