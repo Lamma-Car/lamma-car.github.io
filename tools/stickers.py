@@ -128,14 +128,16 @@ def draw_sticker(c, ox, oy, code, qr, mirrored=False, bleed=BLEED):
     _center(c, "Scan to contact the vehicle owner", "Plex", 8.2, 88.9, MUTED, max_w=80)
 
     # QR on white; the white around it is the quiet zone (>= 4 modules)
-    _qr(c, qr, (W - QR_SIZE) / 2, QR_Y, QR_SIZE)
+    if qr is not None:
+        _qr(c, qr, (W - QR_SIZE) / 2, QR_Y, QR_SIZE)
 
     # navy footer band with the code
     c.setFillColor(NAVY)
     c.rect(-bleed * mm, -bleed * mm, (W + 2 * bleed) * mm, (BAND + bleed) * mm, stroke=0, fill=1)
     c.setFillColor(ORANGE)
     c.rect(-bleed * mm, BAND * mm, (W + 2 * bleed) * mm, 1.2 * mm, stroke=0, fill=1)
-    _center(c, code, "Plex-Bold", 10, 5.4, WHITE, tracking=3)
+    if code:
+        _center(c, code, "Plex-Bold", 10, 5.4, WHITE, tracking=3)
     c.restoreState()
 
 
@@ -233,3 +235,16 @@ def render_master(code, qr, out_dir, font_dir):
     c.showPage()
     c.save()
     dieline_pdf(out_dir / "lamma-sticker-90x130-dieline.pdf")
+    base_pdf(Path(__file__).resolve().parent / "brand" / "sticker-base.pdf")
+
+
+def base_pdf(path):
+    """Sticker artwork without QR and code (96 x 136 mm incl. bleed). tools/admin.html
+    stamps the QR (62 mm square at x 14, y 21.5 mm from the trim corner) and the code
+    (Plex Bold 10 pt, 3 pt tracking, centred, baseline 5.4 mm) onto it."""
+    pw, ph = W + 2 * BLEED, H + 2 * BLEED
+    c = canvas.Canvas(str(path), pagesize=(pw * mm, ph * mm))
+    c.setTitle("Lamma Car sticker base")
+    draw_sticker(c, BLEED, BLEED, None, None, False)
+    c.showPage()
+    c.save()

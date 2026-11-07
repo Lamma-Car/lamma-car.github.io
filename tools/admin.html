@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>لوحة إدارة لمّة كار</title>
+<!--
+  Lamma Car — local admin page.
+  Open this file from your computer (double-click). It is NOT part of the website:
+  GitHub Pages only publishes the docs/ folder.
+  It reads and writes the repository through the GitHub API with your own token.
+  Pages it generates are identical to tools/lamma.py (same templates, same rules).
+-->
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js" integrity="sha384-2p6U+1mmqF10USehFeRiyG2ESG9FwIqN+jxULn5w9jjQIihSn9Pt13dVCn/Hawjn" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG" crossorigin="anonymous"></script>
+<style>
+:root {
+  --navy: #0e1428;
+  --navy-2: #1a2342;
+  --orange: #fd5d27;
+  --bg: #f4f5f8;
+  --card: #ffffff;
+  --ink: #0e1428;
+  --muted: #5f6578;
+  --line: #e3e5ec;
+  --ok: #138a4b;
+  --ok-bg: #e3f5ea;
+  --warn: #9a5b00;
+  --warn-bg: #fff1d6;
+  --off: #a12c2c;
+  --off-bg: #fbe5e5;
+  --idle: #4c5266;
+  --idle-bg: #eceef3;
+  --font: "Segoe UI", Tahoma, "Noto Sans Arabic", "Geeza Pro", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+button, input, select { font: inherit; color: inherit; }
+a { color: inherit; }
+
+header.bar { background: var(--navy); color: #fff; }
+.bar-in { max-width: 1180px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 17px; }
+.brand img { height: 34px; background: #fff; border-radius: 8px; padding: 3px 8px; }
+.brand small { font-weight: 400; color: rgba(255,255,255,.65); font-size: 13px; }
+.bar-in .spacer { flex: 1; }
+.repo { font-size: 13px; color: rgba(255,255,255,.7); direction: ltr; }
+.bar .btn { background: transparent; color: #fff; border-color: rgba(255,255,255,.3); }
+.bar .btn:hover { border-color: rgba(255,255,255,.6); }
+
+main { max-width: 1180px; margin: 0 auto; padding: 24px 20px 80px; display: grid; gap: 20px; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+.panel h2 { margin: 0 0 4px; font-size: 18px; }
+.sub { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+
+.field { display: grid; gap: 6px; margin-bottom: 14px; }
+.field label { font-weight: 600; font-size: 14px; }
+.field input[type=text], .field input[type=password], .field input[type=tel], .field input[type=number], select, input[type=search] {
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fff; min-height: 42px; width: 100%;
+}
+.ltr { direction: ltr; text-align: left; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; margin-bottom: 10px; }
+.check input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--orange); }
+.hint { font-size: 13px; color: var(--muted); }
+.hint ol { margin: 6px 0 0; padding-inline-start: 20px; }
+
+.btn { border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 0 14px; min-height: 40px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+.btn:hover { border-color: #c9ccd6; }
+.btn.primary { background: var(--orange); border-color: var(--orange); color: #fff; }
+.btn.dark { background: var(--navy); border-color: var(--navy); color: #fff; }
+.btn.small { min-height: 32px; padding: 0 10px; font-size: 13px; }
+.btn.danger { color: var(--off); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(253,93,39,.45); outline-offset: 1px; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+.stat b { display: block; font-size: 26px; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 13px; }
+
+.pending { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--navy); color: #fff; border-radius: 14px; padding: 14px 18px; }
+.pending p { margin: 0; flex: 1; min-width: 200px; }
+.pending .btn:not(.primary) { background: transparent; color: #fff; border-color: rgba(255,255,255,.3); }
+
+.batches { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.batch { border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+.batch h3 { margin: 0; font-size: 15px; direction: ltr; text-align: right; }
+.batch .meta { font-size: 13px; color: var(--muted); }
+.batch .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.tools input[type=search] { flex: 1; min-width: 200px; width: auto; }
+.tools select { width: auto; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--line); vertical-align: middle; }
+th { background: #fafbfc; font-size: 13px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.code { direction: ltr; text-align: right; font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 600; white-space: nowrap; }
+td.phone { direction: ltr; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+td.acts { white-space: nowrap; }
+td.acts .btn { margin-inline-start: 4px; }
+tr.changed td:first-child { box-shadow: inset -3px 0 0 var(--orange); }
+.chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.chip.available { background: var(--idle-bg); color: var(--idle); }
+.chip.assigned { background: var(--warn-bg); color: var(--warn); }
+.chip.active { background: var(--ok-bg); color: var(--ok); }
+.chip.inactive { background: var(--off-bg); color: var(--off); }
+.empty { padding: 28px; text-align: center; color: var(--muted); }
+
+dialog { border: 0; border-radius: 18px; padding: 0; width: min(520px, calc(100vw - 32px)); box-shadow: 0 30px 80px -20px rgba(14,20,40,.5); }
+dialog::backdrop { background: rgba(14,20,40,.55); }
+.dlg { padding: 22px; }
+.dlg h3 { margin: 0 0 4px; font-size: 18px; }
+.dlg .row { display: flex; gap: 8px; justify-content: flex-start; margin-top: 18px; flex-wrap: wrap; }
+.err { color: var(--off); font-size: 14px; min-height: 1.5em; margin: 4px 0 0; }
+.qrbox { display: grid; justify-items: center; gap: 10px; text-align: center; }
+.qrbox canvas { width: 240px; height: 240px; image-rendering: pixelated; border: 1px solid var(--line); border-radius: 8px; }
+.qrbox .url { direction: ltr; font-size: 13px; word-break: break-all; color: var(--muted); }
+
+.toast { position: fixed; inset-inline: 0; bottom: 20px; display: flex; justify-content: center; pointer-events: none; z-index: 50; }
+.toast div { background: var(--navy); color: #fff; padding: 12px 18px; border-radius: 12px; max-width: min(640px, calc(100vw - 32px)); box-shadow: 0 12px 30px -10px rgba(0,0,0,.4); }
+.toast div.bad { background: var(--off); }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand"><img id="logo" alt="Lamma Car" hidden><span>لوحة الإدارة<br><small>لمّة كار · على جهازك فقط</small></span></div>
+    <div class="spacer"></div>
+    <span class="repo" id="repoLabel"></span>
+    <button class="btn small" id="reloadBtn" hidden>تحديث من GitHub</button>
+    <button class="btn small" id="logoutBtn" hidden>خروج</button>
+  </div>
+</header>
+
+<main>
+  <!-- Connect -->
+  <section class="panel" id="connect">
+    <h2>الاتصال بـ GitHub</h2>
+    <p class="sub">الصفحة دي بتقرا بيانات الأكواد من الريبو وتنشر التغييرات عليه مباشرة. محتاجة GitHub Token بصلاحية على ريبو Lamma_Car بس.</p>
+    <form id="connectForm" autocomplete="off">
+      <div class="field">
+        <label for="repoInput">الريبو</label>
+        <input type="text" id="repoInput" class="ltr" value="shamelbyvezeeta/Lamma_Car" required>
+      </div>
+      <div class="field">
+        <label for="tokenInput">GitHub Token</label>
+        <input type="password" id="tokenInput" class="ltr" placeholder="github_pat_…" required>
+      </div>
+      <label class="check"><input type="checkbox" id="rememberInput"> <span>افتكر الـ Token على الجهاز ده (ماتعلّمش عليها لو الجهاز مشترك مع حد)</span></label>
+      <p class="err" id="connectErr"></p>
+      <button class="btn primary" type="submit" id="connectBtn">اتصال</button>
+    </form>
+    <div class="hint" style="margin-top:16px">
+      <b>إزاي تعمل Token (مرة واحدة):</b>
+      <ol>
+        <li>GitHub ← صورتك ← Settings ← Developer settings ← Personal access tokens ← <b>Fine-grained tokens</b> ← Generate new token.</li>
+        <li>Resource owner: <b class="ltr">shamelbyvezeeta</b> · Repository access: <b>Only select repositories</b> ← <b class="ltr">Lamma_Car</b>.</li>
+        <li>Permissions ← Repository permissions ← <b>Contents: Read and write</b>. (مافيش أي صلاحية تانية مطلوبة.)</li>
+        <li>Generate، وانسخ الـ Token والصقه هنا. ماتحطّوش في أي ملف ولا تبعته لحد.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- App -->
+  <div id="app" hidden style="display:grid;gap:20px">
+    <div class="pending" id="pendingBar" hidden>
+      <p id="pendingText"></p>
+      <button class="btn" id="discardBtn">إلغاء التغييرات</button>
+      <button class="btn primary" id="publishBtn">نشر على الموقع</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <section class="panel">
+      <div class="tools" style="margin-bottom:6px">
+        <h2 style="flex:1">الدفعات</h2>
+        <button class="btn dark" id="newBatchBtn">+ دفعة أكواد جديدة</button>
+      </div>
+      <p class="sub">كل دفعة فيها أكواد ملصقات. نزّل ملفات الطباعة من هنا وابعتها للمطبعة.</p>
+      <div class="batches" id="batches"></div>
+    </section>
+
+    <section class="panel">
+      <h2>الأكواد والعملاء</h2>
+      <p class="sub">علشان تضيف عميل: اختار كود "متاح" (رقم الملصق اللي استلمه) ودوس "إضافة عميل".</p>
+      <div class="tools">
+        <input type="search" id="search" placeholder="ابحث بالكود أو الاسم أو الرقم">
+        <select id="statusFilter" aria-label="الحالة">
+          <option value="">كل الحالات</option>
+          <option value="available">متاح</option>
+          <option value="assigned">مسجّل (مش منشور)</option>
+          <option value="active">مفعّل</option>
+          <option value="inactive">متوقف</option>
+        </select>
+        <select id="batchFilter" aria-label="الدفعة"><option value="">كل الدفعات</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>الكود</th><th>الحالة</th><th>الاسم</th><th>الموبايل</th><th>الدفعة</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- New batch -->
+<dialog id="batchDlg"><form class="dlg" id="batchForm" method="dialog">
+  <h3>دفعة أكواد جديدة</h3>
+  <p class="sub">هيتعمل أكواد جديدة عشوائية، وصفحة "غير متاح" لكل كود لحد ما تضيف العميل.</p>
+  <div class="field"><label for="batchCount">عدد الأكواد</label><input type="number" id="batchCount" min="1" max="500" value="40" required></div>
+  <div class="field"><label for="batchNote">ملاحظة (اختياري)</label><input type="text" id="batchNote" placeholder="مثلاً: المطبعة، رقم الطلب"></div>
+  <p class="err" id="batchErr"></p>
+  <div class="row"><button class="btn primary" value="ok" id="batchOk">إنشاء</button><button class="btn" value="cancel" formnovalidate>إلغاء</button></div>
+</form></dialog>
+
+<!-- Contact -->
+<dialog id="contactDlg"><form class="dlg" id="contactForm" method="dialog">
+  <h3 id="contactTitle">إضافة عميل</h3>
+  <p class="sub">الكود <b class="ltr" id="contactCode"></b> · الاسم والرقم بس اللي بيظهروا في الصفحة.</p>
+  <div class="field"><label for="nameAr">الاسم بالعربي</label><input type="text" id="nameAr" maxlength="60"></div>
+  <div class="field"><label for="nameEn">الاسم بالإنجليزي</label><input type="text" id="nameEn" class="ltr" maxlength="60"></div>
+  <div class="field"><label for="phone">رقم الموبايل</label><input type="tel" id="phone" class="ltr" placeholder="01001234567" required></div>
+  <label class="check"><input type="checkbox" id="waInput" checked> <span>إظهار زرار واتساب</span></label>
+  <label class="check"><input type="checkbox" id="consentInput"> <span>العميل وافق إن اسمه ورقمه يظهروا في صفحة عامة على الإنترنت</span></label>
+  <label class="check" id="activateWrap"><input type="checkbox" id="activateInput" checked> <span>تفعيل الصفحة على طول</span></label>
+  <p class="err" id="contactErr"></p>
+  <div class="row"><button class="btn primary" value="ok" id="contactOk">حفظ</button><button class="btn" value="cancel" formnovalidate>إلغاء</button></div>
+</form></dialog>
+
+<!-- QR -->
+<dialog id="qrDlg"><form class="dlg" method="dialog">
+  <div class="qrbox">
+    <h3 id="qrTitle" class="ltr"></h3>
+    <canvas id="qrCanvas" width="240" height="240"></canvas>
+    <a class="url" id="qrUrl" target="_blank" rel="noopener"></a>
+    <div class="row" style="justify-content:center"><button class="btn primary" type="button" id="qrPng">تحميل PNG</button><button class="btn" value="close">إغلاق</button></div>
+  </div>
+</form></dialog>
+
+<!-- Confirm -->
+<dialog id="confirmDlg"><form class="dlg" method="dialog">
+  <h3 id="confirmTitle"></h3>
+  <p class="sub" id="confirmText"></p>
+  <div class="row"><button class="btn primary" value="ok" id="confirmOk">تأكيد</button><button class="btn" value="cancel">إلغاء</button></div>
+</form></dialog>
+
+<div class="toast" aria-live="polite"><div id="toast" hidden></div></div>
+
+<!-- ===================== Page generator: must match tools/lamma.py ===================== -->
+<script id="generator">
+var LAMMA = (function () {
+  var ALPHABET = "23456789abcdefghjkmnpqrstuvwxyz";
+  var CODE_LEN = 6;
+  var STATUSES = ["available", "assigned", "active", "inactive"];
+  var WA_TEXT_AR = "مرحباً، وصلت لرقمك من ملصق لمّة كار على سيارتك.";
+  var WA_TEXT_EN = "Hello, I found your number on the Lamma Car sticker on your car.";
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+  }
+  function fill(text, values) {
+    Object.keys(values).forEach(function (k) { text = text.split("{{" + k + "}}").join(values[k]); });
+    return text;
+  }
+  function page(T, body, assets, titleAr, titleEn) {
+    return fill(T["page.html"], { ASSETS: assets, TITLE_AR: esc(titleAr), TITLE_EN: esc(titleEn), BODY: body });
+  }
+  function unavailablePage(T, assets) {
+    var body = fill(T["unavailable.html"], {
+      TITLE_AR: "هذا الرمز غير متاح حالياً",
+      TITLE_EN: "This code isn't available right now",
+      TEXT_AR: "لا توجد بيانات تواصل مفعّلة لهذا الملصق. إذا كان الملصق لك، تواصل مع لمّة كار لتفعيله.",
+      TEXT_EN: "There are no active contact details for this sticker. If it's yours, contact Lamma Car to activate it."
+    });
+    return page(T, body, assets, "غير متاح · لمّة كار", "Unavailable · Lamma Car");
+  }
+  function firstLetter(name) {
+    var chars = Array.from(String(name).trim());
+    for (var i = 0; i < chars.length; i++) if (/\p{L}/u.test(chars[i])) return chars[i].toUpperCase();
+    return "•";
+  }
+  function formatPhone(e164) {
+    var d = e164.slice(1), cc = null, rest;
+    var list = ["1", "20", "966", "971", "965", "974", "973", "968", "962", "961", "212", "44"];
+    for (var i = 0; i < list.length; i++) if (d.indexOf(list[i]) === 0) { cc = list[i]; rest = d.slice(cc.length); break; }
+    if (cc === null) { cc = d.slice(0, 3); rest = d.slice(3); }
+    var groups;
+    if (cc === "1" && rest.length === 10) groups = [rest.slice(0, 3), rest.slice(3, 6), rest.slice(6)];
+    else if (cc === "20" && rest.length === 10) groups = [rest.slice(0, 2), rest.slice(2, 6), rest.slice(6)];
+    else {
+      groups = [];
+      for (var j = 0; j < rest.length; j += 3) groups.push(rest.slice(j, j + 3));
+      if (groups.length > 1 && groups[groups.length - 1].length === 1) { var last = groups.pop(); groups[groups.length - 1] += last; }
+    }
+    return "+" + cc + " " + groups.join(" ");
+  }
+  function normalizePhone(raw, countryCode) {
+    var s = String(raw).trim().replace(/[٠-٩]/g, function (c) { return String(c.charCodeAt(0) - 0x660); })
+      .replace(/[۰-۹]/g, function (c) { return String(c.charCodeAt(0) - 0x6F0); });
+    var digits = s.replace(/[^\d+]/g, ""), num;
+    if (digits.indexOf("+") === 0) num = digits.slice(1);
+    else if (digits.indexOf("00") === 0) num = digits.slice(2);
+    else if (digits.indexOf("0") === 0) num = countryCode + digits.slice(1);
+    else num = digits;
+    if (!/^\d{8,15}$/.test(num)) return null;
+    return "+" + num;
+  }
+  function contactPage(T, rec, assets) {
+    var c = rec.contact;
+    var nameAr = c.name_ar || c.name_en, nameEn = c.name_en || c.name_ar;
+    var digits = c.phone.slice(1), wa = "";
+    if (c.whatsapp !== false) {
+      wa = fill(T["whatsapp.html"], {
+        WA_AR: "https://wa.me/" + digits + "?text=" + encodeURIComponent(WA_TEXT_AR),
+        WA_EN: "https://wa.me/" + digits + "?text=" + encodeURIComponent(WA_TEXT_EN)
+      });
+    }
+    var body = fill(T["contact.html"], {
+      INITIAL_AR: esc(firstLetter(nameAr)), INITIAL_EN: esc(firstLetter(nameEn)),
+      NAME_AR: esc(nameAr), NAME_EN: esc(nameEn),
+      PHONE_DISPLAY: esc(formatPhone(c.phone)), TEL: c.phone,
+      WHATSAPP: wa.replace(/\n+$/, "")
+    });
+    return page(T, body, assets, "تواصل مع صاحب السيارة · لمّة كار", "Contact the owner · Lamma Car");
+  }
+  function codePage(T, rec) {
+    return rec.status === "active" && rec.contact ? contactPage(T, rec, "../../assets/") : unavailablePage(T, "../../assets/");
+  }
+  return { ALPHABET: ALPHABET, CODE_LEN: CODE_LEN, STATUSES: STATUSES, esc: esc, fill: fill, formatPhone: formatPhone,
+           normalizePhone: normalizePhone, contactPage: contactPage, unavailablePage: unavailablePage, codePage: codePage };
+})();
+if (typeof module !== "undefined") module.exports = LAMMA;
+</script>
+
+<!-- ===================== App ===================== -->
+<script>
+(function () {
+  "use strict";
+  var API = "https://api.github.com";
+  var BRANCH = "main";
+  var TOKEN_KEY = "lamma-admin-token";
+  var STATUS_AR = { available: "متاح", assigned: "مسجّل (مش منشور)", active: "مفعّل", inactive: "متوقف" };
+  var MM = 72 / 25.4;
+
+  var S = {
+    token: "", owner: "", repo: "",
+    cfg: null, T: {}, headSha: "",
+    batches: [],            // [{path, data, rawAtLoad}]
+    takenRemote: new Set(), // existing folders in docs/q
+    dirtyBatches: new Set(),
+    dirtyCodes: new Set(),
+    log: [],
+    assets: {}
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  function today() { var d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  function toast(msg, bad) {
+    var t = $("toast"); t.textContent = msg; t.className = bad ? "bad" : ""; t.hidden = false;
+    clearTimeout(toast._t); toast._t = setTimeout(function () { t.hidden = true; }, bad ? 9000 : 4500);
+  }
+  function codeUrl(siteUrl, code) { return siteUrl + "q/" + code + "/"; }
+
+  // ---------- GitHub API ----------
+  function gh(path, opts) {
+    opts = opts || {};
+    var headers = { "Authorization": "Bearer " + S.token, "X-GitHub-Api-Version": "2022-11-28",
+                    "Accept": opts.raw ? "application/vnd.github.raw+json" : "application/vnd.github+json" };
+    if (opts.body) headers["Content-Type"] = "application/json";
+    return fetch(API + "/repos/" + S.owner + "/" + S.repo + path, {
+      method: opts.method || "GET", headers: headers, cache: "no-store",
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function (r) {
+      if (opts.allow404 && r.status === 404) return null;
+      if (!r.ok) {
+        return r.text().then(function (t) {
+          var m = "GitHub " + r.status;
+          if (r.status === 401) m = "الـ Token غلط أو انتهت صلاحيته.";
+          else if (r.status === 403) m = "الـ Token مالوش صلاحية كفاية (محتاج Contents: Read and write على Lamma_Car)، أو المنظمة لسه ماوافقتش عليه.";
+          else if (r.status === 404) m = "مش لاقي الريبو أو الملف: " + path + " — اتأكد من اسم الريبو وإن الـ Token عنده صلاحية عليه.";
+          else if (r.status === 409 || r.status === 422) m = "GitHub رفض التغيير (" + r.status + "). دوس \"تحديث من GitHub\" وجرّب تاني.";
+          var e = new Error(m); e.status = r.status; e.detail = t; throw e;
+        });
+      }
+      if (opts.binary) return r.arrayBuffer();
+      if (opts.raw) return r.text();
+      return r.json();
+    });
+  }
+  function rawText(path) { return gh("/contents/" + path + "?ref=" + BRANCH, { raw: true }); }
+  function rawBin(path) { return gh("/contents/" + path + "?ref=" + BRANCH, { raw: true, binary: true }); }
+
+  // ---------- Load ----------
+  function load() {
+    $("connectBtn").disabled = true;
+    toast("بقرا البيانات من GitHub…");
+    var T = {};
+    return gh("/git/ref/heads/" + BRANCH).then(function (ref) {
+      S.headSha = ref.object.sha;
+      return Promise.all([
+        rawText("config.json"),
+        Promise.all(["page.html", "contact.html", "whatsapp.html", "unavailable.html"].map(function (n) {
+          return rawText("tools/templates/" + n).then(function (t) { T[n] = t; });
+        })),
+        gh("/contents/batches?ref=" + BRANCH, { allow404: true }),
+        gh("/contents/docs/q?ref=" + BRANCH, { allow404: true })
+      ]);
+    }).then(function (res) {
+      S.cfg = JSON.parse(res[0]);
+      if (!/\/$/.test(S.cfg.site_url)) S.cfg.site_url += "/";
+      S.T = T;
+      S.takenRemote = new Set((res[3] || []).filter(function (x) { return x.type === "dir"; }).map(function (x) { return x.name; }));
+      var files = (res[2] || []).filter(function (x) { return x.type === "file" && /\.json$/.test(x.name); });
+      return Promise.all(files.map(function (f) {
+        return rawText(f.path).then(function (t) { return { path: f.path, data: JSON.parse(t), rawAtLoad: t }; });
+      }));
+    }).then(function (batches) {
+      S.batches = batches.sort(function (a, b) { return a.data.batch_id < b.data.batch_id ? -1 : 1; });
+      S.dirtyBatches.clear(); S.dirtyCodes.clear(); S.log = [];
+      $("connect").hidden = true; $("app").hidden = false;
+      $("reloadBtn").hidden = false; $("logoutBtn").hidden = false;
+      $("repoLabel").textContent = S.owner + "/" + S.repo;
+      loadLogo();
+      render();
+      toast("تمام، اتصلت بـ " + S.owner + "/" + S.repo);
+    }).catch(function (e) {
+      $("connectErr").textContent = e.message;
+      toast(e.message, true);
+      throw e;
+    }).finally(function () { $("connectBtn").disabled = false; });
+  }
+  function loadLogo() {
+    if ($("logo").src) return;
+    rawBin("docs/assets/images/lamma-logo.png").then(function (buf) {
+      $("logo").src = URL.createObjectURL(new Blob([buf], { type: "image/png" })); $("logo").hidden = false;
+    }).catch(function () {});
+  }
+  function asset(name, path) {
+    if (!S.assets[name]) S.assets[name] = rawBin(path).catch(function (e) { delete S.assets[name]; throw e; });
+    return S.assets[name];
+  }
+
+  // ---------- Model ----------
+  function allCodes() {
+    var out = [];
+    S.batches.forEach(function (b) { b.data.codes.forEach(function (r) { out.push({ rec: r, batch: b }); }); });
+    return out;
+  }
+  function findCode(code) {
+    for (var i = 0; i < S.batches.length; i++) {
+      var codes = S.batches[i].data.codes;
+      for (var j = 0; j < codes.length; j++) if (codes[j].code === code) return { rec: codes[j], batch: S.batches[i] };
+    }
+    return null;
+  }
+  function markDirty(batch, codes, what) {
+    S.dirtyBatches.add(batch.path);
+    codes.forEach(function (c) { S.dirtyCodes.add(c); });
+    S.log.push(what);
+    render();
+  }
+  function randomCode(taken) {
+    var A = LAMMA.ALPHABET, n = A.length, limit = Math.floor(4294967296 / n) * n;
+    for (;;) {
+      var buf = new Uint32Array(LAMMA.CODE_LEN * 2), out = "";
+      crypto.getRandomValues(buf);
+      for (var i = 0; i < buf.length && out.length < LAMMA.CODE_LEN; i++) if (buf[i] < limit) out += A[buf[i] % n];
+      if (out.length === LAMMA.CODE_LEN && !/^\d+$/.test(out) && !taken.has(out)) { taken.add(out); return out; }
+    }
+  }
+  function newBatch(count, note) {
+    var taken = new Set(S.takenRemote);
+    allCodes().forEach(function (x) { taken.add(x.rec.code); });
+    var d = today().replace(/-/g, ""), n = 1, id;
+    var ids = new Set(S.batches.map(function (b) { return b.data.batch_id; }));
+    do { id = "LC-" + d + "-" + String(n).padStart(2, "0"); n++; } while (ids.has(id));
+    var data = { batch_id: id, created: today(), note: note || "", site_url: S.cfg.site_url, codes: [] };
+    for (var i = 0; i < count; i++) data.codes.push({ code: randomCode(taken), status: "available", contact: null, updated: today() });
+    var b = { path: "batches/" + id + ".json", data: data, rawAtLoad: null };
+    S.batches.push(b);
+    markDirty(b, data.codes.map(function (r) { return r.code; }), "دفعة جديدة " + id + " (" + count + " كود)");
+    return b;
+  }
+
+  // ---------- Render ----------
+  function render() {
+    var list = allCodes(), counts = { available: 0, assigned: 0, active: 0, inactive: 0 };
+    list.forEach(function (x) { counts[x.rec.status]++; });
+    $("stats").innerHTML = [["active", "مفعّل"], ["assigned", "مسجّل (مش منشور)"], ["available", "متاح"], ["inactive", "متوقف"]]
+      .map(function (s) { return '<div class="stat"><b>' + counts[s[0]] + "</b><span>" + s[1] + "</span></div>"; }).join("");
+
+    var pend = S.dirtyCodes.size + S.dirtyBatches.size;
+    $("pendingBar").hidden = pend === 0;
+    if (pend) $("pendingText").textContent = "فيه تغييرات لسه ما اتنشرتش (" + S.log.length + "): " + S.log.slice(-3).join("، ") + (S.log.length > 3 ? "…" : "") + ". الموقع مش هيتغيّر غير لما تدوس نشر.";
+
+    var bf = $("batchFilter"), cur = bf.value;
+    bf.innerHTML = '<option value="">كل الدفعات</option>' + S.batches.map(function (b) {
+      return '<option value="' + LAMMA.esc(b.data.batch_id) + '">' + LAMMA.esc(b.data.batch_id) + "</option>";
+    }).join("");
+    bf.value = cur;
+
+    $("batches").innerHTML = S.batches.length ? S.batches.slice().reverse().map(function (b) {
+      var c = { available: 0, assigned: 0, active: 0, inactive: 0 };
+      b.data.codes.forEach(function (r) { c[r.status]++; });
+      var unpub = S.dirtyBatches.has(b.path) && !b.rawAtLoad;
+      return '<div class="batch"><h3>' + LAMMA.esc(b.data.batch_id) + (unpub ? ' <span class="chip assigned">لسه ما اتنشرتش</span>' : "") + "</h3>" +
+        '<div class="meta">' + b.data.codes.length + " كود · " + c.active + " مفعّل · " + c.available + " متاح · اتعملت " + LAMMA.esc(b.data.created) +
+        (b.data.note ? "<br>" + LAMMA.esc(b.data.note) : "") + "</div>" +
+        '<div class="acts" data-batch="' + LAMMA.esc(b.path) + '">' +
+        '<button class="btn small dark" data-dl="mirrored">ملصقات للطباعة · معكوس</button>' +
+        '<button class="btn small" data-dl="normal">ملصقات · عادي</button>' +
+        '<button class="btn small" data-dl="sheetsM">A4 تجربة · معكوس</button>' +
+        '<button class="btn small" data-dl="sheetsN">A4 تجربة · عادي</button>' +
+        '<button class="btn small" data-dl="qr">صور QR (ZIP)</button>' +
+        "</div></div>";
+    }).join("") : '<div class="empty">مافيش دفعات لسه. ابدأ بـ "دفعة أكواد جديدة".</div>';
+
+    var q = $("search").value.trim().toLowerCase(), sf = $("statusFilter").value, bfv = bf.value;
+    var rows = list.filter(function (x) {
+      var r = x.rec, c = r.contact || {};
+      if (sf && r.status !== sf) return false;
+      if (bfv && x.batch.data.batch_id !== bfv) return false;
+      if (!q) return true;
+      return [r.code, c.name_ar, c.name_en, c.phone].some(function (v) { return v && String(v).toLowerCase().indexOf(q) !== -1; });
+    });
+    var shown = rows.slice(0, 500);
+    $("rows").innerHTML = shown.length ? shown.map(function (x) {
+      var r = x.rec, c = r.contact || {};
+      var acts = [];
+      if (r.status === "available") acts.push('<button class="btn small primary" data-act="assign">إضافة عميل</button>');
+      if (r.contact) acts.push('<button class="btn small" data-act="edit">تعديل</button>');
+      if (r.contact && r.status !== "active") acts.push('<button class="btn small dark" data-act="activate">تفعيل</button>');
+      if (r.status === "active") acts.push('<button class="btn small" data-act="deactivate">إيقاف</button>');
+      if (r.contact) acts.push('<button class="btn small danger" data-act="erase">مسح البيانات</button>');
+      acts.push('<button class="btn small" data-act="qr">QR</button>');
+      return '<tr data-code="' + r.code + '"' + (S.dirtyCodes.has(r.code) ? ' class="changed"' : "") + ">" +
+        '<td class="code">' + r.code + "</td>" +
+        '<td><span class="chip ' + r.status + '">' + STATUS_AR[r.status] + "</span></td>" +
+        "<td>" + LAMMA.esc(c.name_ar || c.name_en || "—") + "</td>" +
+        '<td class="phone">' + (c.phone ? LAMMA.esc(LAMMA.formatPhone(c.phone)) : "—") + "</td>" +
+        '<td class="code" style="font-weight:400">' + LAMMA.esc(x.batch.data.batch_id) + "</td>" +
+        '<td class="acts">' + acts.join("") + "</td></tr>";
+    }).join("") + (rows.length > shown.length ? '<tr><td colspan="6" class="empty">بيظهر أول 500 من ' + rows.length + " — استخدم البحث.</td></tr>" : "")
+      : '<tr><td colspan="6" class="empty">' + (list.length ? "مافيش نتايج." : "مافيش أكواد لسه.") + "</td></tr>";
+  }
+
+  // ---------- Dialogs ----------
+  function confirmBox(title, text, okLabel) {
+    return new Promise(function (resolve) {
+      $("confirmTitle").textContent = title; $("confirmText").textContent = text; $("confirmOk").textContent = okLabel || "تأكيد";
+      var d = $("confirmDlg");
+      d.returnValue = "";
+      d.onclose = function () { resolve(d.returnValue === "ok"); };
+      d.showModal();
+    });
+  }
+  var editing = null;
+  function openContact(code, mode) {
+    var x = findCode(code), c = x.rec.contact || {};
+    editing = { code: code, mode: mode };
+    $("contactTitle").textContent = mode === "assign" ? "إضافة عميل" : "تعديل بيانات العميل";
+    $("contactCode").textContent = code;
+    $("nameAr").value = c.name_ar || ""; $("nameEn").value = c.name_en || "";
+    $("phone").value = c.phone || ""; $("waInput").checked = c.whatsapp !== false;
+    $("consentInput").checked = !!c.consent_date; $("consentInput").disabled = !!c.consent_date;
+    $("activateWrap").hidden = mode !== "assign"; $("activateInput").checked = true;
+    $("contactErr").textContent = "";
+    $("contactDlg").showModal();
+  }
+  function saveContact(ev) {
+    if (ev.submitter && ev.submitter.value === "cancel") return;
+    ev.preventDefault();
+    var x = findCode(editing.code), r = x.rec;
+    var ar = $("nameAr").value.trim(), en = $("nameEn").value.trim();
+    var phone = LAMMA.normalizePhone($("phone").value, S.cfg.default_country_code || "20");
+    if (!ar && !en) { $("contactErr").textContent = "اكتب الاسم (عربي أو إنجليزي على الأقل)."; return; }
+    if (!phone) { $("contactErr").textContent = "رقم الموبايل مش صح. اكتبه زي 01001234567 أو +201001234567."; return; }
+    var activate = editing.mode === "assign" && $("activateInput").checked;
+    if (activate && !$("consentInput").checked) { $("contactErr").textContent = "مينفعش تفعّل من غير موافقة العميل. علّم على الموافقة أو شيل علامة التفعيل."; return; }
+    var c = Object.assign({}, r.contact || {});
+    if (ar) c.name_ar = ar; else delete c.name_ar;
+    if (en) c.name_en = en; else delete c.name_en;
+    c.phone = phone; c.whatsapp = $("waInput").checked;
+    if ($("consentInput").checked && !c.consent_date) c.consent_date = today();
+    var ordered = {};
+    ["name_ar", "name_en", "phone", "whatsapp", "consent_date"].forEach(function (k) { if (k in c) ordered[k] = c[k]; });
+    r.contact = ordered;
+    if (editing.mode === "assign") r.status = activate ? "active" : "assigned";
+    r.updated = today();
+    $("contactDlg").close();
+    markDirty(x.batch, [r.code], (editing.mode === "assign" ? (activate ? "إضافة وتفعيل " : "إضافة ") : "تعديل ") + r.code);
+  }
+  function act(code, a) {
+    var x = findCode(code), r = x.rec;
+    if (a === "assign" || a === "edit") return openContact(code, a);
+    if (a === "qr") return showQr(code, x.batch);
+    if (a === "activate") {
+      if (!r.contact.consent_date) {
+        return confirmBox("موافقة العميل", "العميل " + (r.contact.name_ar || r.contact.name_en) + " وافق إن اسمه ورقمه يظهروا في صفحة عامة؟", "أيوه، وافق — فعّل").then(function (ok) {
+          if (!ok) return;
+          r.contact.consent_date = today(); r.status = "active"; r.updated = today();
+          markDirty(x.batch, [code], "تفعيل " + code);
+        });
+      }
+      r.status = "active"; r.updated = today();
+      return markDirty(x.batch, [code], "تفعيل " + code);
+    }
+    if (a === "deactivate") {
+      r.status = "inactive"; r.updated = today();
+      return markDirty(x.batch, [code], "إيقاف " + code);
+    }
+    if (a === "erase") {
+      return confirmBox("مسح بيانات العميل", "هيتمسح الاسم والرقم من الكود " + code + " والصفحة هتبقى \"غير متاح\". الكود مايتستخدمش لحد تاني لأن الملصق لسه على العربية.", "امسح").then(function (ok) {
+        if (!ok) return;
+        r.status = "inactive"; r.contact = null; r.updated = today();
+        markDirty(x.batch, [code], "مسح بيانات " + code);
+      });
+    }
+  }
+
+  // ---------- Publish ----------
+  function publish() {
+    var files = [];
+    S.batches.forEach(function (b) {
+      if (S.dirtyBatches.has(b.path)) files.push({ path: b.path, content: JSON.stringify(b.data, null, 2) + "\n" });
+    });
+    S.dirtyCodes.forEach(function (code) {
+      var x = findCode(code);
+      files.push({ path: "docs/q/" + code + "/index.html", content: LAMMA.codePage(S.T, x.rec) });
+    });
+    if (!files.length) return;
+    $("publishBtn").disabled = true;
+    toast("بنشر " + files.length + " ملف على GitHub…");
+    var msg = "Admin: " + S.log.join("; ");
+    var ref, baseTree;
+    return gh("/git/ref/heads/" + BRANCH).then(function (r) {
+      ref = r.object.sha;
+      if (ref === S.headSha) return;
+      // Someone changed the repository since we loaded: make sure our batch files weren't touched.
+      return Promise.all(S.batches.filter(function (b) { return S.dirtyBatches.has(b.path) && b.rawAtLoad; }).map(function (b) {
+        return rawText(b.path).then(function (t) {
+          if (t !== b.rawAtLoad) throw new Error("الملف " + b.path + " اتغيّر على GitHub من وقت ما فتحت الصفحة. دوس \"تحديث من GitHub\" وأعد التغييرات.");
+        });
+      }));
+    }).then(function () {
+      return gh("/git/commits/" + ref);
+    }).then(function (c) {
+      baseTree = c.tree.sha;
+      return gh("/git/trees", { method: "POST", body: { base_tree: baseTree, tree: files.map(function (f) {
+        return { path: f.path, mode: "100644", type: "blob", content: f.content };
+      }) } });
+    }).then(function (tree) {
+      return gh("/git/commits", { method: "POST", body: { message: msg.slice(0, 1000), tree: tree.sha, parents: [ref] } });
+    }).then(function (commit) {
+      return gh("/git/refs/heads/" + BRANCH, { method: "PATCH", body: { sha: commit.sha, force: false } }).then(function () { return commit; });
+    }).then(function (commit) {
+      S.headSha = commit.sha;
+      S.batches.forEach(function (b) { if (S.dirtyBatches.has(b.path)) b.rawAtLoad = JSON.stringify(b.data, null, 2) + "\n"; });
+      S.dirtyCodes.forEach(function (c) { S.takenRemote.add(c); });
+      S.dirtyBatches.clear(); S.dirtyCodes.clear(); S.log = [];
+      render();
+      toast("اتنشر ✓ — الموقع هيتحدّث خلال دقيقة لـ 10 دقايق (تابع تبويب Actions على GitHub).");
+    }).catch(function (e) { toast(e.message, true); })
+      .finally(function () { $("publishBtn").disabled = false; });
+  }
+
+  // ---------- QR ----------
+  function makeQr(url) {
+    var q = qrcode(0, "H"); q.addData(url, "Byte"); q.make(); return q;
+  }
+  function qrCanvas(q, canvas, scale) {
+    var n = q.getModuleCount(), size = (n + 8) * scale;
+    canvas.width = size; canvas.height = size;
+    var g = canvas.getContext("2d");
+    g.fillStyle = "#fff"; g.fillRect(0, 0, size, size); g.fillStyle = "#000";
+    for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) if (q.isDark(r, c)) g.fillRect((c + 4) * scale, (r + 4) * scale, scale, scale);
+    return canvas;
+  }
+  function qrSvg(q) {
+    var n = q.getModuleCount(), s = n + 8, d = "";
+    for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) if (q.isDark(r, c)) d += "M" + (c + 4) + " " + (r + 4) + "h1v1h-1z";
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + s + " " + s + '" width="' + s * 10 + '" height="' + s * 10 + '" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path fill="#000" d="' + d + '"/></svg>';
+  }
+  function canvasPng(canvas) {
+    return new Promise(function (res) { canvas.toBlob(res, "image/png"); });
+  }
+  function download(blob, name) {
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+  }
+  var qrCurrent = null;
+  function showQr(code, batch) {
+    var url = codeUrl(batch.data.site_url, code), q = makeQr(url);
+    qrCanvas(q, $("qrCanvas"), 6);
+    $("qrTitle").textContent = code; $("qrUrl").textContent = url; $("qrUrl").href = url;
+    qrCurrent = { code: code, q: q };
+    $("qrDlg").showModal();
+  }
+
+  // ---------- PDF (same layout as tools/stickers.py) ----------
+  var W = 90, H = 130, BLEED = 3, QR_SIZE = 62, QR_Y = 21.5;
+  function pdfCtx() {
+    return Promise.all([asset("base", "tools/brand/sticker-base.pdf"), asset("font", "tools/fonts/IBMPlexSansArabic-Bold.ttf")]);
+  }
+  function drawSticker(page, emb, font, ox, oy, code, q, mirrored) {
+    var P = PDFLib;
+    if (mirrored) page.pushOperators(P.pushGraphicsState(), P.concatTransformationMatrix(-1, 0, 0, 1, (2 * ox + W) * MM, 0));
+    page.drawPage(emb, { x: (ox - BLEED) * MM, y: (oy - BLEED) * MM, width: (W + 2 * BLEED) * MM, height: (H + 2 * BLEED) * MM });
+    var n = q.getModuleCount(), m = QR_SIZE / n, x0 = ox + (W - QR_SIZE) / 2, k = P.cmyk(0, 0, 0, 1);
+    for (var r = 0; r < n; r++) {
+      var c = 0;
+      while (c < n) {
+        if (q.isDark(r, c)) {
+          var s = c; while (c < n && q.isDark(r, c)) c++;
+          page.drawRectangle({ x: (x0 + s * m) * MM, y: (oy + QR_Y + (n - r - 1) * m) * MM, width: (c - s) * m * MM, height: (m + 0.01) * MM, color: k });
+        } else c++;
+      }
+    }
+    var size = 10, track = 3, wsum = 0, chars = code.split("");
+    chars.forEach(function (ch) { wsum += font.widthOfTextAtSize(ch, size); });
+    wsum += track * (chars.length - 1);
+    var x = (ox + W / 2) * MM - wsum / 2;
+    chars.forEach(function (ch) {
+      page.drawText(ch, { x: x, y: (oy + 5.4) * MM, size: size, font: font, color: P.cmyk(0, 0, 0, 0) });
+      x += font.widthOfTextAtSize(ch, size) + track;
+    });
+    if (mirrored) page.pushOperators(P.popGraphicsState());
+  }
+  function stickersPdf(batch, mirrored, sheets) {
+    var P = PDFLib;
+    return pdfCtx().then(function (a) {
+      return P.PDFDocument.create().then(function (doc) {
+        doc.registerFontkit(fontkit);
+        doc.setTitle("Lamma Car " + (sheets ? "proof sheets " : "stickers ") + batch.data.batch_id + (mirrored ? " (MIRRORED)" : " (NORMAL)"));
+        doc.setAuthor("Lamma Car");
+        return Promise.all([doc.embedPdf(a[0], [0]), doc.embedFont(a[1], { subset: true })]).then(function (r) {
+          var emb = r[0][0], font = r[1], codes = batch.data.codes;
+          if (!sheets) {
+            codes.forEach(function (rec) {
+              var page = doc.addPage([(W + 2 * BLEED) * MM, (H + 2 * BLEED) * MM]);
+              page.setBleedBox(0, 0, (W + 2 * BLEED) * MM, (H + 2 * BLEED) * MM);
+              page.setTrimBox(BLEED * MM, BLEED * MM, W * MM, H * MM);
+              drawSticker(page, emb, font, BLEED, BLEED, rec.code, makeQr(codeUrl(batch.data.site_url, rec.code)), mirrored);
+            });
+          } else {
+            var cw = W + 2 * BLEED + 6, ch = H + 2 * BLEED + 6;
+            var x0 = (210 - 2 * cw) / 2 + 3 + BLEED, y0 = (297 - 2 * ch) / 2 + 3 + BLEED;
+            var slots = [[x0, y0 + ch], [x0 + cw, y0 + ch], [x0, y0], [x0 + cw, y0]];
+            var pages = Math.ceil(codes.length / 4);
+            for (var p = 0; p < pages; p++) {
+              var page = doc.addPage([210 * MM, 297 * MM]);
+              codes.slice(p * 4, p * 4 + 4).forEach(function (rec, i) {
+                var sx = slots[i][0], sy = slots[i][1];
+                drawSticker(page, emb, font, sx, sy, rec.code, makeQr(codeUrl(batch.data.site_url, rec.code)), mirrored);
+                cropMarks(page, sx, sy);
+              });
+              page.drawText(batch.data.batch_id + "  ·  page " + (p + 1) + "/" + pages + "  ·  " + (mirrored ? "MIRRORED (reverse print)" : "NORMAL (outside view)") + "  ·  trim 90 x 130 mm, print at 100% (no scaling)",
+                { x: 10 * MM, y: 6 * MM, size: 7, font: font, color: P.cmyk(0, 0, 0, 0.7) });
+            }
+          }
+          return doc.save();
+        });
+      });
+    });
+  }
+  function cropMarks(page, x, y) {
+    var k = PDFLib.cmyk(0, 0, 0, 1), L = 4, off = BLEED + 1;
+    function line(x1, y1, x2, y2) { page.drawLine({ start: { x: x1 * MM, y: y1 * MM }, end: { x: x2 * MM, y: y2 * MM }, thickness: 0.25, color: k }); }
+    [x, x + W].forEach(function (cx) { [[y, -1], [y + H, 1]].forEach(function (p) { line(cx, p[0] + p[1] * off, cx, p[0] + p[1] * (off + L)); }); });
+    [y, y + H].forEach(function (cy) { [[x, -1], [x + W, 1]].forEach(function (p) { line(p[0] + p[1] * off, cy, p[0] + p[1] * (off + L), cy); }); });
+  }
+  function qrZip(batch) {
+    var zip = new JSZip(), dir = zip.folder(batch.data.batch_id + "-qr"), jobs = [];
+    var csv = "﻿code,url,status_at_export,qr\r\n";
+    batch.data.codes.forEach(function (rec) {
+      var url = codeUrl(batch.data.site_url, rec.code), q = makeQr(url);
+      csv += rec.code + "," + url + "," + rec.status + "," + q.getModuleCount() + " modules / error H\r\n";
+      dir.file(rec.code + ".svg", qrSvg(q));
+      jobs.push(canvasPng(qrCanvas(q, document.createElement("canvas"), 24)).then(function (b) { dir.file(rec.code + ".png", b); }));
+    });
+    zip.file(batch.data.batch_id + "-summary.csv", csv);
+    return Promise.all(jobs).then(function () { return zip.generateAsync({ type: "blob" }); });
+  }
+  function batchDownload(path, kind, btn) {
+    var b = S.batches.filter(function (x) { return x.path === path; })[0];
+    btn.disabled = true; var label = btn.textContent; btn.textContent = "بيتجهّز…";
+    var job;
+    if (kind === "qr") job = qrZip(b).then(function (blob) { download(blob, b.data.batch_id + "-qr.zip"); });
+    else {
+      var mir = kind === "mirrored" || kind === "sheetsM", sheets = kind === "sheetsM" || kind === "sheetsN";
+      job = stickersPdf(b, mir, sheets).then(function (bytes) {
+        download(new Blob([bytes], { type: "application/pdf" }),
+          (sheets ? "proof-sheets-A4-" : "stickers-print-") + (mir ? "MIRRORED" : "NORMAL") + "-" + b.data.batch_id + ".pdf");
+      });
+    }
+    job.catch(function (e) { toast("ماقدرتش أجهّز الملف: " + e.message, true); })
+      .finally(function () { btn.disabled = false; btn.textContent = label; });
+  }
+
+  // ---------- Wire up ----------
+  $("connectForm").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var parts = $("repoInput").value.trim().split("/");
+    if (parts.length !== 2) { $("connectErr").textContent = "اكتب الريبو كده: owner/repo"; return; }
+    S.owner = parts[0]; S.repo = parts[1]; S.token = $("tokenInput").value.trim();
+    $("connectErr").textContent = "";
+    try {
+      if ($("rememberInput").checked) localStorage.setItem(TOKEN_KEY, JSON.stringify({ t: S.token, r: S.owner + "/" + S.repo }));
+      else localStorage.removeItem(TOKEN_KEY);
+    } catch (e) {}
+    if (!window.PDFLib || !window.qrcode || !window.JSZip || !window.fontkit) {
+      $("connectErr").textContent = "مكتبات الصفحة ماتحمّلتش. اتأكد إنك متصل بالإنترنت وافتح الصفحة تاني.";
+      return;
+    }
+    load().catch(function () {});
+  });
+  $("reloadBtn").addEventListener("click", function () {
+    var go = function () { load().catch(function () {}); };
+    if (S.log.length) confirmBox("تحديث من GitHub", "التغييرات اللي ما اتنشرتش هتضيع.", "حدّث").then(function (ok) { if (ok) go(); });
+    else go();
+  });
+  $("logoutBtn").addEventListener("click", function () {
+    try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    location.reload();
+  });
+  $("newBatchBtn").addEventListener("click", function () { $("batchErr").textContent = ""; $("batchDlg").showModal(); });
+  $("batchForm").addEventListener("submit", function (ev) {
+    if (ev.submitter && ev.submitter.value === "cancel") return;
+    ev.preventDefault();
+    var n = parseInt($("batchCount").value, 10);
+    if (!(n >= 1 && n <= 500)) { $("batchErr").textContent = "العدد من 1 لـ 500."; return; }
+    var b = newBatch(n, $("batchNote").value.trim());
+    $("batchDlg").close();
+    toast("اتعملت " + b.data.batch_id + ". دوس \"نشر على الموقع\" علشان صفحاتها تتنشر، وبعدين نزّل ملفات الطباعة.");
+  });
+  $("contactForm").addEventListener("submit", saveContact);
+  $("rows").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-act]"); if (!b) return;
+    act(b.closest("tr").getAttribute("data-code"), b.getAttribute("data-act"));
+  });
+  $("batches").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button[data-dl]"); if (!b) return;
+    batchDownload(b.closest("[data-batch]").getAttribute("data-batch"), b.getAttribute("data-dl"), b);
+  });
+  ["search", "statusFilter", "batchFilter"].forEach(function (id) { $(id).addEventListener("input", render); });
+  $("publishBtn").addEventListener("click", publish);
+  $("discardBtn").addEventListener("click", function () {
+    confirmBox("إلغاء التغييرات", "كل التغييرات اللي ما اتنشرتش هتتلغي، والبيانات هترجع زي ما هي على GitHub.", "إلغاء التغييرات").then(function (ok) {
+      if (ok) load().catch(function () {});
+    });
+  });
+  $("qrPng").addEventListener("click", function () {
+    canvasPng(qrCanvas(qrCurrent.q, document.createElement("canvas"), 24)).then(function (b) { download(b, qrCurrent.code + ".png"); });
+  });
+  window.addEventListener("beforeunload", function (e) { if (S.log.length) { e.preventDefault(); e.returnValue = ""; } });
+
+  try {
+    var saved = JSON.parse(localStorage.getItem(TOKEN_KEY) || "null");
+    if (saved && saved.t) { $("tokenInput").value = saved.t; $("repoInput").value = saved.r || $("repoInput").value; $("rememberInput").checked = true; }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

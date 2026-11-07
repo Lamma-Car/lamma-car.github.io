@@ -89,7 +89,7 @@ def site_is_configured(cfg):
 
 
 def base_path(site_url):
-    """Path part of the site URL, e.g. '/lamma-car/'."""
+    """Path part of the site URL, e.g. '/Lamma_Car/'."""
     p = urllib.parse.urlparse(site_url).path or "/"
     return p if p.endswith("/") else p + "/"
 
@@ -115,8 +115,8 @@ def find_code(code):
 
 
 def normalize_phone(raw, country_code):
-    s = raw.strip()
-    digits = re.sub(r"[^\d+]", "", s)
+    s = raw.strip().translate(str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789"))
+    digits = re.sub(r"[^0-9+]", "", s)
     if digits.startswith("+"):
         num = digits[1:]
     elif digits.startswith("00"):
