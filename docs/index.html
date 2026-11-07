@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-ar="لمّة كار" data-title-en="Lamma Car">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0e1428">
+<title>لمّة كار</title>
+<link rel="icon" href="assets/images/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/images/icon.png">
+<link rel="preload" href="assets/fonts/plex-arabic-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/lamma.css">
+<script>
+(function(){var d=document.documentElement,l="ar";try{var q=new URLSearchParams(location.search).get("lang");if(q==="en"||q==="ar"){l=q}else{var s=localStorage.getItem("lamma-lang");if(s==="en"||s==="ar")l=s}}catch(e){}d.lang=l;d.dir=l==="ar"?"rtl":"ltr";document.title=d.getAttribute("data-title-"+l);})();
+</script>
+</head>
+<body>
+<header class="top">
+  <button class="lang" id="lang" type="button"><span class="ar" lang="en">English</span><span class="en" lang="ar">العربية</span></button>
+</header>
+<main>
+  <div class="card">
+    <img class="logo" src="assets/images/lamma-logo.png" width="600" height="238" alt="Lamma Car">
+    <div class="rule" aria-hidden="true"></div>
+  <section class="state" aria-labelledby="t">
+    <div class="state-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3M21 21h-4M21 14v3"/></svg></div>
+    <h1 class="state-title" id="t"><span class="ar">امسح الملصق للتواصل مع صاحب السيارة</span><span class="en">Scan the sticker to contact the vehicle owner</span></h1>
+    <p class="state-text"><span class="ar">لمّة كار تربطك بصاحب السيارة عبر ملصق QR على الزجاج الخلفي. افتح كاميرا هاتفك ووجّهها نحو الملصق.</span><span class="en">Lamma Car connects you with a vehicle's owner through the QR sticker on its rear window. Point your phone camera at the sticker.</span></p>
+  </section>
+
+  </div>
+</main>
+<footer class="foot"><span class="ar">لمّة كار · صفحة تواصل عبر ملصق QR</span><span class="en">Lamma Car · QR sticker contact page</span></footer>
+<script>
+document.getElementById("lang").addEventListener("click",function(){var d=document.documentElement,l=d.lang==="ar"?"en":"ar";d.lang=l;d.dir=l==="ar"?"rtl":"ltr";document.title=d.getAttribute("data-title-"+l);try{localStorage.setItem("lamma-lang",l)}catch(e){}});
+</script>
+</body>
+</html>

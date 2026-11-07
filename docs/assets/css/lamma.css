@@ -1,0 +1,190 @@
+/* Lamma Car — contact card styles.
+   Brand colours taken from the official Lamma Car logo. */
+
+@font-face {
+  font-family: "Plex Arabic";
+  src: url("../fonts/plex-arabic-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plex Arabic";
+  src: url("../fonts/plex-arabic-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --navy: #0e1428;
+  --navy-2: #1a2342;
+  --orange: #fd5d27;
+  --card: #ffffff;
+  --ink: #0e1428;
+  --muted: #5f6578;
+  --line: #e7e8ee;
+  --soft: #f4f5f8;
+  --wa: #1fbf5f;
+  --radius: 28px;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: var(--navy); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--ink);
+  font-family: "Plex Arabic", system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background:
+    radial-gradient(120% 60% at 50% 0%, var(--navy-2) 0%, rgba(26,35,66,0) 70%),
+    var(--navy);
+}
+
+/* Language switching: both languages are in the page; only one is shown. */
+html[lang="ar"] .en, html[lang="en"] .ar { display: none !important; }
+
+.top {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 0 0;
+}
+.lang {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.06);
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px 24px 24px;
+  box-shadow: 0 24px 48px -16px rgba(0,0,0,.45);
+  overflow: hidden;
+}
+.card::after {
+  /* brand accent strip */
+  content: "";
+  display: block;
+  height: 6px;
+  margin: 24px -24px -24px;
+  background: var(--orange);
+}
+
+.logo {
+  display: block;
+  width: 196px;
+  height: auto;
+  margin: 0 auto 20px;
+}
+.rule {
+  height: 1px;
+  background: var(--line);
+  margin: 0 -24px 24px;
+}
+
+.person { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.monogram {
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  background: var(--orange);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 700;
+  flex: none;
+}
+.eyebrow {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.name {
+  margin: 14px 0 0;
+  font-size: clamp(28px, 8vw, 34px);
+  line-height: 1.25;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.phone {
+  margin: 6px 0 24px;
+  font-size: 20px;
+  color: var(--muted);
+  letter-spacing: .02em;
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+html[dir="rtl"] .phone { text-align: right; }
+
+.actions { display: grid; gap: 12px; }
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 64px;
+  border-radius: 18px;
+  font-size: 19px;
+  font-weight: 700;
+  text-decoration: none;
+  color: #ffffff;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn svg { width: 24px; height: 24px; flex: none; }
+.btn-call { background: var(--navy); }
+.btn-wa { background: var(--wa); }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible, .lang:focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+
+/* Unavailable / info state */
+.state { text-align: center; }
+.state-icon {
+  width: 56px; height: 56px;
+  border-radius: 18px;
+  display: grid; place-items: center;
+  background: var(--soft);
+  color: var(--orange);
+  margin: 0 auto 16px;
+}
+.state-icon svg { width: 28px; height: 28px; }
+.state-title { margin: 0 0 8px; font-size: 22px; line-height: 1.4; font-weight: 700; }
+.state-text { margin: 0; color: var(--muted); font-size: 16px; }
+
+.foot {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+  padding-bottom: 4px;
+}

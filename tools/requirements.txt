@@ -1,0 +1,5 @@
+# Local management tool only — nothing here runs on GitHub Pages.
+segno>=1.6
+reportlab>=4.0
+arabic-reshaper>=3.0
+python-bidi>=0.4
