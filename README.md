@@ -91,7 +91,7 @@ Production-ready, with **no codes and no contact data**. `batches/` and `exports
 
 ## Branding
 
-- **Logo:** the official Lamma Car logo, used as supplied (only trimmed and resized, not redrawn).
+- **Logo:** the official Lamma Car logo, not redrawn. The tagline "Find it. Sell it. Easy." is removed everywhere at the owner's request; only the mark and the "Lamma Car" wordmark are used.
   - `tools/brand/lamma-logo.png` — full resolution, used on the stickers.
   - `docs/assets/images/lamma-logo.png` — web version (10 KB).
   - `docs/assets/images/icon.png` — browser/phone icon made from the logo's L mark.
