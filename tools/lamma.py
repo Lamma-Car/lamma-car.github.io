@@ -89,7 +89,7 @@ def site_is_configured(cfg):
 
 
 def base_path(site_url):
-    """Path part of the site URL, e.g. '/Lamma_Car/'."""
+    """Path part of the site URL, e.g. '/' or '/repo/'."""
     p = urllib.parse.urlparse(site_url).path or "/"
     return p if p.endswith("/") else p + "/"
 

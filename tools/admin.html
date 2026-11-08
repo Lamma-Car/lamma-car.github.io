@@ -143,11 +143,11 @@ dialog::backdrop { background: rgba(14,20,40,.55); }
   <!-- Connect -->
   <section class="panel" id="connect">
     <h2>الاتصال بـ GitHub</h2>
-    <p class="sub">الصفحة دي بتقرا بيانات الأكواد من الريبو وتنشر التغييرات عليه مباشرة. محتاجة GitHub Token بصلاحية على ريبو Lamma_Car بس.</p>
+    <p class="sub">الصفحة دي بتقرا بيانات الأكواد من الريبو وتنشر التغييرات عليه مباشرة. محتاجة GitHub Token بصلاحية على ريبو lamma-car.github.io بس.</p>
     <form id="connectForm" autocomplete="off">
       <div class="field">
         <label for="repoInput">الريبو</label>
-        <input type="text" id="repoInput" class="ltr" value="shamelbyvezeeta/Lamma_Car" required>
+        <input type="text" id="repoInput" class="ltr" value="Lamma-Car/lamma-car.github.io" required>
       </div>
       <div class="field">
         <label for="tokenInput">GitHub Token</label>
@@ -161,7 +161,7 @@ dialog::backdrop { background: rgba(14,20,40,.55); }
       <b>إزاي تعمل Token (مرة واحدة):</b>
       <ol>
         <li>GitHub ← صورتك ← Settings ← Developer settings ← Personal access tokens ← <b>Fine-grained tokens</b> ← Generate new token.</li>
-        <li>Resource owner: <b class="ltr">shamelbyvezeeta</b> · Repository access: <b>Only select repositories</b> ← <b class="ltr">Lamma_Car</b>.</li>
+        <li>Resource owner: <b class="ltr">Lamma-Car</b> · Repository access: <b>Only select repositories</b> ← <b class="ltr">lamma-car.github.io</b>.</li>
         <li>Permissions ← Repository permissions ← <b>Contents: Read and write</b>. (مافيش أي صلاحية تانية مطلوبة.)</li>
         <li>Generate، وانسخ الـ Token والصقه هنا. ماتحطّوش في أي ملف ولا تبعته لحد.</li>
       </ol>
@@ -385,7 +385,7 @@ if (typeof module !== "undefined") module.exports = LAMMA;
         return r.text().then(function (t) {
           var m = "GitHub " + r.status;
           if (r.status === 401) m = "الـ Token غلط أو انتهت صلاحيته.";
-          else if (r.status === 403) m = "الـ Token مالوش صلاحية كفاية (محتاج Contents: Read and write على Lamma_Car)، أو المنظمة لسه ماوافقتش عليه.";
+          else if (r.status === 403) m = "الـ Token مالوش صلاحية كفاية (محتاج Contents: Read and write على lamma-car.github.io)، أو المنظمة لسه ماوافقتش عليه.";
           else if (r.status === 404) m = "مش لاقي الريبو أو الملف: " + path + " — اتأكد من اسم الريبو وإن الـ Token عنده صلاحية عليه.";
           else if (r.status === 409 || r.status === 422) m = "GitHub رفض التغيير (" + r.status + "). دوس \"تحديث من GitHub\" وجرّب تاني.";
           var e = new Error(m); e.status = r.status; e.detail = t; throw e;
