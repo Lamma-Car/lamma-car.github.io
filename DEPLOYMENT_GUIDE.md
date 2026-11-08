@@ -1,7 +1,7 @@
 # Upload and deployment guide
 
-**Live site address (after deployment):** https://shamelbyvezeeta.github.io/Lamma_Car/
-**QR code addresses:** `https://shamelbyvezeeta.github.io/Lamma_Car/q/<code>/`
+**Live site address (after deployment):** https://lamma-car.github.io/
+**QR code addresses:** `https://lamma-car.github.io/q/<code>/`
 
 Everything in this package is already set to this address. You don't need to create or edit any file.
 
@@ -9,9 +9,9 @@ Everything in this package is already set to this address. You don't need to cre
 
 ## Part 1 — Create the repository
 
-1. Sign in to github.com with an account that can create repositories in **shamelbyvezeeta**.
+1. Sign in to github.com with an account that owns the **Lamma-Car** organization.
 2. Click **+** (top right) → **New repository**.
-3. **Owner:** `shamelbyvezeeta` · **Repository name:** `Lamma_Car` (exactly: capital L and C, underscore).
+3. **Owner:** `Lamma-Car` · **Repository name:** `lamma-car.github.io` (exactly). This special name makes the site live at the root address, with no repository name in the URL.
 4. **Visibility:** Public.
 5. Leave "Add a README", ".gitignore" and "license" **unticked**.
 6. Click **Create repository**.
@@ -32,17 +32,17 @@ Everything in this package is already set to this address. You don't need to cre
 2. Under **Build and deployment** → **Source**, choose **Deploy from a branch**.
 3. **Branch:** `main`, folder: **`/docs`**. Click **Save**.
 4. Open the **Actions** tab. Wait for "pages build and deployment" to show a green tick (usually 1–3 minutes).
-5. Back in **Settings → Pages**, the top shows *Your site is live at https://shamelbyvezeeta.github.io/Lamma_Car/*.
+5. Back in **Settings → Pages**, the top shows *Your site is live at https://lamma-car.github.io/*.
 
 ## Part 4 — Check the live site
 
 | Open this | You should see |
 |---|---|
-| https://shamelbyvezeeta.github.io/Lamma_Car/ | Lamma Car card: "امسح الملصق للتواصل مع صاحب السيارة" |
-| https://shamelbyvezeeta.github.io/Lamma_Car/?lang=en | The same in English, left-to-right |
-| https://shamelbyvezeeta.github.io/Lamma_Car/q/zzzzzz/ | "هذا الرمز غير متاح حالياً" (unknown code) with the same styling |
+| https://lamma-car.github.io/ | Lamma Car card: "امسح الملصق للتواصل مع صاحب السيارة" |
+| https://lamma-car.github.io/?lang=en | The same in English, left-to-right |
+| https://lamma-car.github.io/q/zzzzzz/ | "هذا الرمز غير متاح حالياً" (unknown code) with the same styling |
 
-If the third page has no styling, the repository name isn't exactly `Lamma_Car`.
+If the third page has no styling, the repository name isn't exactly `lamma-car.github.io`.
 
 The package contains **no codes and no contacts** yet, so there are no contact pages until you create your first batch (Part 5).
 
@@ -74,10 +74,10 @@ STICKER_PRINT_GUIDE.md explains the mirrored/normal choice and the glass test.
 
 ## How GitHub Pages details are handled
 
-- Contact pages use relative paths (`../../assets/…`), so they work under `/Lamma_Car/`. Only `404.html` uses the full `/Lamma_Car/…` path, as GitHub requires.
+- Contact pages use relative paths (`../../assets/…`), so they work at any path. Only `404.html` uses absolute `/…` path, as GitHub requires.
 - Every code is a real folder with an `index.html`, so direct links and refreshing never give a 404.
 - QR codes include the trailing `/`, which avoids a redirect.
 
 ## Never change after printing
 
-`shamelbyvezeeta`, `Lamma_Car` and `github.io` are inside every printed QR code. Renaming the organization or repository, making it private, or switching Pages off breaks every sticker already on a car.
+`lamma-car.github.io` is inside every printed QR code. Renaming the `Lamma-Car` organization or the repository, making it private, or switching Pages off breaks every sticker already on a car.

@@ -11,11 +11,11 @@ Everything here runs on your own computer. Nothing on the website can change dat
 **Connect (first time):**
 
 1. On GitHub: your photo → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens** → **Generate new token**.
-2. **Resource owner:** `shamelbyvezeeta`. **Repository access:** Only select repositories → `Lamma_Car`.
+2. **Resource owner:** `Lamma-Car`. **Repository access:** Only select repositories → `lamma-car.github.io`.
 3. **Repository permissions** → **Contents: Read and write**. Nothing else.
 4. Generate, copy the token, paste it into the admin page, click **اتصال**.
    - Tick "افتكر الـ Token" only on your own computer.
-   - If GitHub says the token is pending approval, an owner of the `shamelbyvezeeta` organization must approve it (Organization settings → Personal access tokens).
+   - If GitHub says the token is pending approval, an owner of the `Lamma-Car` organization must approve it (Organization settings → Personal access tokens).
 
 **What you can do:**
 
@@ -39,7 +39,7 @@ Everything below describes the command-line tool, which does the same things.
 pip install -r tools/requirements.txt
 ```
 
-The site address (`https://shamelbyvezeeta.github.io/Lamma_Car/`) is already saved in `config.json`. Default country code for local numbers is **20 (Egypt)**, so `01001234567` is saved as `+201001234567`. Numbers written with `+` or `00` are kept as typed.
+The site address (`https://lamma-car.github.io/`) is already saved in `config.json`. Default country code for local numbers is **20 (Egypt)**, so `01001234567` is saved as `+201001234567`. Numbers written with `+` or `00` are kept as typed.
 
 ## Code statuses
 
@@ -144,7 +144,7 @@ Exports always use the URL stored in the batch, so reprinting an old batch gives
   "batch_id": "LC-20261201-01",
   "created": "2026-12-01",
   "note": "Print run 1",
-  "site_url": "https://shamelbyvezeeta.github.io/Lamma_Car/",
+  "site_url": "https://lamma-car.github.io/",
   "codes": [
     { "code": "k7m3qx", "status": "active", "updated": "2026-12-03",
       "contact": { "name_ar": "أحمد علي", "name_en": "Ahmed Ali",

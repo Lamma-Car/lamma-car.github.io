@@ -13,7 +13,7 @@ batches/LC-….json  ──►  python tools/lamma.py build  ──►  docs/q/<
  (source of truth)        (run on your computer)          (one static page per code)       (public)
 ```
 
-- Every code gets its own folder: `docs/q/<code>/index.html`. A QR URL is `https://shamelbyvezeeta.github.io/Lamma_Car/q/<code>/`.
+- Every code gets its own folder: `docs/q/<code>/index.html`. A QR URL is `https://lamma-car.github.io/q/<code>/`.
 - **Active** codes get a contact page. **Available, assigned and inactive** codes get an "unavailable" page that contains no contact data at all.
 - Unknown codes hit `docs/404.html`, which shows the same "unavailable" message, so nobody can tell a real code from a made-up one.
 - Each page holds only its own record. There is no list, search or shared data file on the site.
@@ -51,7 +51,7 @@ lamma-car/
 
 ## Quick start
 
-Live address: **https://shamelbyvezeeta.github.io/Lamma_Car/** (already set in `config.json`).
+Live address: **https://lamma-car.github.io/** (already set in `config.json`).
 
 1. Upload and publish: follow **DEPLOYMENT_GUIDE.md** step by step.
 2. Double-click **`tools/admin.html`**, connect with a GitHub token (BATCH_MANAGEMENT_GUIDE.md explains how to create one), then:
