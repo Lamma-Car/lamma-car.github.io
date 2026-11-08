@@ -25,7 +25,7 @@ CORNER = 6.0                # die-cut corner radius, mm
 QR_SIZE = 62.0             # mm, QR modules only
 QR_Y = 21.5                # mm, bottom edge of the QR
 BAND = 13.5                # mm, navy footer band height
-LOGO_W = 64.0              # mm
+LOGO_W = 70.0              # mm
 LOGO_FILE = Path(__file__).resolve().parent / "brand" / "lamma-logo.png"
 
 # Brand colours from the official logo: navy #0E1428, orange #FD5D27.
@@ -39,7 +39,7 @@ CUT = CMYKColorSep(0, 1, 0, 0, spotName="CutContour")
 _reshaper = arabic_reshaper.ArabicReshaper(configuration={"delete_harakat": False, "support_ligatures": True})
 _fonts_ready = False
 _logo_reader = None
-LOGO_RATIO = 597 / 1507
+LOGO_RATIO = 454 / 1507
 
 
 def _logo():
@@ -121,7 +121,7 @@ def draw_sticker(c, ox, oy, code, qr, mirrored=False, bleed=BLEED):
     # official logo (raster, transparent background)
     lw = LOGO_W
     lh = lw * LOGO_RATIO
-    c.drawImage(_logo(), (W - lw) / 2 * mm, (H - 4.5 - lh) * mm, lw * mm, lh * mm, mask="auto")
+    c.drawImage(_logo(), (W - lw) / 2 * mm, (H - 7.0 - lh) * mm, lw * mm, lh * mm, mask="auto")
 
     # call to action
     _center(c, ar("امسح الرمز للتواصل مع صاحب السيارة"), "Plex-Bold", 12.2, 93.2, NAVY, max_w=80)
